@@ -1,23 +1,19 @@
-# frontend/Dockerfile
-FROM node:18 AS build
+# Dockerfile.frontend
+FROM node:18
 
-WORKDIR /app
+# Install git
+RUN apt-get update && apt-get install -y git
+
+# Clone frontend repo
+RUN git clone https://github.com/2300030174/cicd_project_frontend.git /app/frontend
+
+WORKDIR /app/frontend
 
 # Install dependencies
-COPY package*.json ./
 RUN npm install
-
-# Copy the rest of the application
-COPY . .
-
-# Build the application
 RUN npm run build
 
-# Serve the application using Nginx
-FROM nginx:alpine
+# Expose port
+EXPOSE 3000
 
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
