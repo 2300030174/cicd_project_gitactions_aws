@@ -1,21 +1,20 @@
-# Dockerfile.backend
-FROM openjdk:17   # or your preferred Java version
+# Use official OpenJDK 17 image
+FROM openjdk:17-jdk-slim
 
-# Install git
-RUN apt-get update && apt-get install -y git
+# Install git (required to clone repo)
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Clone backend repo
-RUN git clone https://github.com/2300030174/cicd_project_backend.git /app/backend
-
+# Set working directory
 WORKDIR /app/backend
 
-# Build the Spring Boot app
-RUN ./gradlew build -x test   # if using Gradle
-# OR
-# RUN mvn clean package       # if using Maven
+# Clone backend repo
+RUN git clone https://github.com/2300030174/cicd_project_backend.git .
 
-# Expose the port your Spring Boot app uses
+# Build the Spring Boot app (skip tests for faster build)
+RUN ./gradlew build -x test
+
+# Expose the Spring Boot port
 EXPOSE 5001
 
-# Run the application
-CMD ["java", "-jar", "build/libs/backend-0.0.1-SNAPSHOT.jar"]   # adjust jar name
+# Run the Spring Boot application
+CMD ["java", "-jar", "build/libs/backend-0.0.1-SNAPSHOT.jar"]
